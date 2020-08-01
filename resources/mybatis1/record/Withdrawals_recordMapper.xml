@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="Withdrawals_recordMapper">
+	
+	<!--表名 -->
+	<sql id="tableName">
+		"FT_WITHDRAWALS_RECORD"
+	</sql>
+	
+	<!-- 字段 -->
+	<sql id="Field">
+		"GMT_CREATE",	
+		"GMT_MODIFIED",	
+		"TRADE_HASH",	
+		"MONEY",	
+		"USER_NAME",	
+		"FROM_ADDRESS",	
+		"IN_ADDRESS",	
+		"WITHDRAWALS_RECORD_ID"
+	</sql>
+	
+	<!-- 字段值 -->
+	<sql id="FieldValue">
+			#{GMT_CREATE},	
+			#{GMT_MODIFIED},	
+			#{TRADE_HASH},	
+			#{MONEY},	
+			#{USER_NAME},	
+			#{FROM_ADDRESS},	
+			#{IN_ADDRESS},	
+			#{WITHDRAWALS_RECORD_ID}
+	</sql>
+	
+	<!-- 新增-->
+	<insert id="save" parameterType="pd">
+		insert into
+		<include refid="tableName"></include>
+		(
+		<include refid="Field"></include>
+		) values (
+		<include refid="FieldValue"></include>
+		)
+	</insert>
+	
+	<!-- 删除-->
+	<delete id="delete" parameterType="pd">
+		delete from
+		<include refid="tableName"></include>
+		where 
+			"WITHDRAWALS_RECORD_ID" = #{WITHDRAWALS_RECORD_ID}
+	</delete>
+	
+	<!-- 修改 -->
+	<update id="edit" parameterType="pd">
+		update
+		<include refid="tableName"></include>
+			set 
+			"WITHDRAWALS_RECORD_ID" = "WITHDRAWALS_RECORD_ID"
+			where 
+				"WITHDRAWALS_RECORD_ID" = #{WITHDRAWALS_RECORD_ID}
+	</update>
+	
+	<!-- 通过ID获取数据 -->
+	<select id="findById" parameterType="pd" resultType="pd">
+		select 
+		<include refid="Field"></include>
+		from 
+		<include refid="tableName"></include>
+		where 
+			"WITHDRAWALS_RECORD_ID" = #{WITHDRAWALS_RECORD_ID}
+	</select>
+	
+	<!-- 列表 -->
+	<select id="datalistPage" parameterType="page" resultType="pd">
+		select
+		<include refid="Field"></include>
+		from 
+		<include refid="tableName"></include>
+		where 1=1
+		<if test="pd.keywords!= null and pd.keywords != ''"><!-- 关键词检索 -->
+			and
+			(
+			"USER_NAME" LIKE CONCAT(CONCAT('%', #{pd.keywords}),'%')
+			or
+			"IN_ADDRESS" LIKE CONCAT(CONCAT('%', #{pd.keywords}),'%')
+			or
+			"FROM_ADDRESS" LIKE CONCAT(CONCAT('%', #{pd.keywords}),'%')
+			or
+			"TRADE_HASH" LIKE CONCAT(CONCAT('%', #{pd.keywords}),'%')
+			)
+		</if>
+		/*时间段搜索*/
+		<if test="pd.lastStart != null and pd.lastStart != '' ">
+			and
+			"GMT_CREATE" &gt;= #{pd.lastStart}
+		</if>
+		<if test="pd.lastEnd!= null and pd.lastEnd != '' ">
+			and
+			"GMT_CREATE" &lt;= ( SELECT TO_CHAR(( SELECT to_date( #{pd.lastEnd}, 'yyyy-mm-dd' ) + 1 FROM dual ),
+			'yyyy-mm-dd' ) FROM dual )
+		</if>
+		order by "WITHDRAWALS_RECORD_ID"
+	</select>
+	
+	<!-- 列表(全部) -->
+	<select id="listAll" parameterType="pd" resultType="pd">
+		select
+		<include refid="Field"></include>
+		from 
+		<include refid="tableName"></include>
+	</select>
+	
+	<!-- 批量删除 -->
+	<delete id="deleteAll" parameterType="String">
+		delete from
+		<include refid="tableName"></include>
+		where 
+			"WITHDRAWALS_RECORD_ID" in
+		<foreach item="item" index="index" collection="array" open="(" separator="," close=")">
+                 #{item}
+		</foreach>
+	</delete>
+	
+	<!-- fh313596790qq(青苔) -->
+</mapper>

@@ -1,0 +1,14 @@
+<component name="ArtifactManager">
+  <artifact type="war" name="S0324">
+    <output-path>$PROJECT_DIR$/out/artifacts/S0324</output-path>
+    <root id="archive" name="S0324.war">
+      <element id="dir-copy" path="$PROJECT_DIR$/WebRoot" />
+      <element id="directory" name="WEB-INF">
+        <element id="directory" name="classes">
+          <element id="module-output" name="S0324" />
+        </element>
+        <element id="directory" name="lib" />
+      </element>
+    </root>
+  </artifact>
+</component>

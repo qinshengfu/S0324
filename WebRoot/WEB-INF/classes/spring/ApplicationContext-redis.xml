@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:p="http://www.springframework.org/schema/p"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:tx="http://www.springframework.org/schema/tx" xmlns:cache="http://www.springframework.org/schema/cache"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+						http://www.springframework.org/schema/beans/spring-beans.xsd
+						http://www.springframework.org/schema/aop
+						http://www.springframework.org/schema/aop/spring-aop.xsd
+						http://www.springframework.org/schema/context
+						http://www.springframework.org/schema/context/spring-context.xsd
+						http://www.springframework.org/schema/tx
+						http://www.springframework.org/schema/tx/spring-tx.xsd http://www.springframework.org/schema/cache http://www.springframework.org/schema/cache/spring-cache.xsd">
+
+    <!-- redis 连接池 -->
+    <bean id="poolConfig" class="redis.clients.jedis.JedisPoolConfig">
+        <!--最大空闲数-->
+        <property name="maxIdle" value="${redis.maxIdle}"/>
+        <property name="maxTotal" value="${redis.maxActive}"/>
+        <!--在borrow一个jedis实例时，是否提前进行validate操作；如果为true，则得到的jedis实例均是可用的-->
+        <property name="testOnBorrow" value="${redis.testOnBorrow}"/>
+    </bean>
+
+    <!-- redis连接工厂 -->
+    <bean id="connectionFactory" class="org.springframework.data.redis.connection.jedis.JedisConnectionFactory"
+          p:host-name="${redis.host}" p:port="${redis.port}" p:password="${redis.password}"
+          p:pool-config-ref="poolConfig" p:usePool="true"/>
+
+    <!--redis操作模版,使用该对象可以操作redis  -->
+    <!--<bean id="redisTemplate" class="org.springframework.data.redis.core.RedisTemplate">
+        <property name="connectionFactory" ref="connectionFactory"/>
+
+        &lt;!&ndash; 开启事务 &ndash;&gt;
+        <property name="enableTransactionSupport" value="true"/>
+    </bean>-->
+
+    <!--<bean id="cacheManager" class="org.springframework.cache.support.SimpleCacheManager">
+        <property name="caches">
+            <set>
+                &lt;!&ndash; 自定义的RedisCacheConfig工具类 &ndash;&gt;
+                <bean class="com.fh.util.config.RedisCacheConfig">
+                    <property name="redisTemplate" ref="redisTemplate"/>
+                    &lt;!&ndash; name属性的值自己随便写，等下在注解当中用 &ndash;&gt;
+                    <property name="name" value="s0324"/>
+                </bean>
+            </set>
+        </property>
+    </bean>-->
+
+
+    <!--自定义key-->
+    <!--    <bean id="keyGenerator" class="com.fh.util.config.KeyGenerator"/>-->
+
+    <!-- 启动缓存注解 -->
+    <!--<cache:annotation-driven cache-manager="cacheManager"/>-->
+
+</beans>

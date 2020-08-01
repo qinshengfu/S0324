@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="Sys_newsMapper">
+
+    <!--表名 -->
+    <sql id="tableName">
+		"FT_SYS_NEWS"
+	</sql>
+
+    <!-- 字段 -->
+    <sql id="Field">
+		"GMT_CREATE",	
+		"GMT_MODIFIED",	
+		"CONTENT",	
+		"TITLE",	
+		"SYS_NEWS_ID"
+	</sql>
+
+    <!-- 字段值 -->
+    <sql id="FieldValue">
+        #{GMT_CREATE},
+        #{GMT_MODIFIED},
+        #{CONTENT},
+        #{TITLE},
+        #{SYS_NEWS_ID}
+	</sql>
+
+    <!-- 新增-->
+    <insert id="save" parameterType="pd">
+        insert into
+        <include refid="tableName"></include>
+        (
+        <include refid="Field"></include>
+        ) values (
+        <include refid="FieldValue"></include>
+        )
+    </insert>
+
+    <!-- 删除-->
+    <delete id="delete" parameterType="pd">
+        delete from
+        <include refid="tableName"></include>
+        where
+        "SYS_NEWS_ID" = #{SYS_NEWS_ID}
+    </delete>
+
+    <!-- 修改 -->
+    <update id="edit" parameterType="pd">
+        update
+        <include refid="tableName"/>
+        set
+        "GMT_MODIFIED" = #{GMT_MODIFIED},
+        "CONTENT" = #{CONTENT},
+        "TITLE" = #{TITLE},
+        "SYS_NEWS_ID" = "SYS_NEWS_ID"
+        where
+        "SYS_NEWS_ID" = #{SYS_NEWS_ID}
+    </update>
+
+    <!-- 通过ID获取数据 -->
+    <select id="findById" parameterType="pd" resultType="pd">
+        select
+        <include refid="Field"/>
+        from
+        <include refid="tableName"/>
+        where
+        "SYS_NEWS_ID" = #{SYS_NEWS_ID}
+    </select>
+
+    <!-- 获取最新一条新闻公告 -->
+    <select id="getLatestNews" parameterType="String" resultType="pd">
+        select
+        <include refid="Field"/>
+        from
+        <include refid="tableName"/>
+        where
+        ROWNUM = 1
+        order by "GMT_CREATE" desc
+    </select>
+
+    <!-- 列表 -->
+    <select id="datalistPage" parameterType="page" resultType="pd">
+        select
+        <include refid="Field"/>
+        from
+        <include refid="tableName"/>
+        where 1=1
+        <if test="pd.keywords != null and pd.keywords != ''"><!-- 关键词检索 -->
+            and
+            (
+            "TITLE" LIKE CONCAT(CONCAT('%', #{pd.keywords}),'%')
+            or
+            "CONTENT" LIKE CONCAT(CONCAT('%', #{pd.keywords}),'%')
+            )
+        </if>
+        /*时间段搜索*/
+        <if test="pd.lastStart != null and pd.lastStart != '' ">
+            and
+            "GMT_CREATE" &gt;= #{pd.lastStart}
+        </if>
+        <if test="pd.lastEnd!= null and pd.lastEnd != '' ">
+            and
+            "GMT_CREATE" &lt;= ( SELECT TO_CHAR(( SELECT to_date( #{pd.lastEnd}, 'yyyy-mm-dd' ) + 1 FROM dual ),
+            'yyyy-mm-dd' ) FROM dual )
+        </if>
+        order by "GMT_CREATE" desc
+    </select>
+
+    <!-- 列表(全部) -->
+    <select id="listAll" parameterType="pd" resultType="pd">
+        select
+        <include refid="Field"/>
+        from
+        <include refid="tableName"/>
+        order by "GMT_CREATE" desc
+    </select>
+
+    <!-- 批量删除 -->
+    <delete id="deleteAll" parameterType="String">
+        delete from
+        <include refid="tableName"></include>
+        where
+        "SYS_NEWS_ID" in
+        <foreach item="item" index="index" collection="array" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </delete>
+
+    <!-- fh313596790qq(青苔) -->
+</mapper>

@@ -1,0 +1,321 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="MembersMapper">
+	 <resultMap type="MemUser" id="MemUserResultMap">
+		<id column="MEMBERS_ID" property="MEMBERS_ID"/>
+		<result column="PHONE" property="PHONE"/>
+		<result column="LOGIN_PASSWORD" property="LOGIN_PASSWORD"/>
+		<result column="TRADE_PASSWORD" property="TRADE_PASSWORD"/>
+		<result column="STATUS" property="STATUS"/>
+		<result column="REGISTER_TIME" property="REGISTER_TIME"/>
+		<result column="SUPERIOR" property="SUPERIOR"/>
+		<result column="LEVEL_P" property="LEVEL_P"/>
+		<result column="MNEMONIC" property="MNEMONIC"/>
+		<result column="MNAME" property="MNAME"/>
+		<result column="ID_CARD" property="ID_CARD"/>
+		<result column="SERIAL" property="SERIAL"/>
+		<result column="ETH_PRIVATE_KEY" property="ETH_PRIVATE_KEY"/>
+		<result column="POSITIVE" property="POSITIVE"/>
+		<result column="OTHER_SIDE" property="OTHER_SIDE"/>
+		<result column="HANDHELD" property="HANDHELD"/>
+		<result column="DIRECT_PUSH" property="DIRECT_PUSH"/>
+		<result column="ACTIVATION_STATE" property="ACTIVATION_STATE"/>
+		<result column="ALGEBRA" property="ALGEBRA"/>
+		<result column="REMARKS" property="REMARKS"/>
+		<result column="ETH" property="ETH"/>
+		<result column="BTC" property="BTC"/>		
+		<result column="JH_TIME" property="JH_TIME"/>		
+		<result column="YHMC" property="YHMC"/>	
+		<result column="PORTRAIT" property="PORTRAIT"/>		
+	</resultMap>
+				
+	<!--表名 -->
+	<sql id="tableName">
+		"SYS_MEMBERS"
+	</sql>
+	
+	<!-- 字段 -->
+	<sql id="Field">
+		"PHONE",	
+		"LOGIN_PASSWORD",	
+		"TRADE_PASSWORD",	
+		"STATUS",	
+		"REGISTER_TIME",	
+		"SUPERIOR",	
+		"LEVEL_P",	
+		"MNEMONIC",	
+		"MNAME",	
+		"ID_CARD",	
+		"SERIAL",	
+		"ETH_PRIVATE_KEY",	
+		"POSITIVE",	
+		"OTHER_SIDE",	
+		"HANDHELD",	
+		"DIRECT_PUSH",	
+		"ACTIVATION_STATE",	
+		"ALGEBRA",	
+		"REMARKS",	
+		"ETH",	
+		"MEMBERS_ID",
+		"BTC",                   
+		"IDENTITY",               
+		"SUPERIOR_F",
+		"JH_TIME",
+		"YHMC",
+		"PORTRAIT" 
+	</sql>
+	
+	<!-- 字段值 -->
+	<sql id="FieldValue">
+			#{PHONE},
+			#{LOGIN_PASSWORD},
+			#{TRADE_PASSWORD},
+			#{STATUS},
+			#{REGISTER_TIME},
+			#{SUPERIOR},
+			#{LEVEL_P},
+			#{MNEMONIC},
+			#{MNAME},
+			#{ID_CARD},
+			#{SERIAL},
+			#{ETH_PRIVATE_KEY},
+			#{POSITIVE},
+			#{OTHER_SIDE},
+			#{HANDHELD},
+			#{DIRECT_PUSH},
+			#{ACTIVATION_STATE},
+			#{ALGEBRA},
+			#{REMARKS},
+			#{ETH},
+			#{MEMBERS_ID},
+			#{BTC},
+			#{IDENTITY},
+			#{SUPERIOR_F},
+			#{JH_TIME},
+			#{YHMC},
+			#{PORTRAIT}
+	</sql>
+	
+	<!-- 新增-->
+	<insert id="save" parameterType="pd">
+		insert into
+		<include refid="tableName"></include>
+		(
+		<include refid="Field"></include>
+		) values (
+		<include refid="FieldValue"></include>
+		)
+	</insert>
+	
+	<!-- 删除-->
+	<delete id="delete" parameterType="pd">
+		delete from
+		<include refid="tableName"></include>
+		where 
+			"MEMBERS_ID" = #{MEMBERS_ID}
+	</delete>
+	
+	<!-- 修改 -->
+	<update id="edit" parameterType="pd">
+		update
+		<include refid="tableName"></include>
+			set 			
+			<if test="TRADE_PASSWORD != null and TRADE_PASSWORD != ''">
+				"TRADE_PASSWORD" = #{TRADE_PASSWORD},	
+			</if>
+			<if test="STATUS != null and STATUS != ''">
+				"STATUS" = #{STATUS},	
+			</if>
+			<if test="LEVEL_P != null and LEVEL_P != ''">
+				"LEVEL_P" = #{LEVEL_P},	
+			</if>
+			<if test="MNEMONIC != null and MNEMONIC != ''">
+				"MNEMONIC" = #{MNEMONIC},	
+			</if>
+			<if test="MNAME != null and MNAME != ''">
+				"MNAME" = #{MNAME},	
+			</if>
+			<if test="ID_CARD != null and ID_CARD != ''">
+				"ID_CARD" = #{ID_CARD},	
+			</if>
+			<if test="ETH_PRIVATE_KEY != null and ETH_PRIVATE_KEY != ''">
+				"ETH_PRIVATE_KEY" = #{ETH_PRIVATE_KEY},	
+			</if>
+			<if test="POSITIVE != null and POSITIVE != ''">
+				"POSITIVE" = #{POSITIVE},	
+			</if>
+			<if test="OTHER_SIDE != null and OTHER_SIDE != ''">
+				"OTHER_SIDE" = #{OTHER_SIDE},	
+			</if>
+			<if test="HANDHELD != null and HANDHELD != ''">
+				"HANDHELD" = #{HANDHELD},	
+			</if>
+			<if test="DIRECT_PUSH != null and DIRECT_PUSH != ''">
+				"DIRECT_PUSH" = #{DIRECT_PUSH},	
+			</if>
+			<if test="ACTIVATION_STATE != null and ACTIVATION_STATE != ''">
+				"ACTIVATION_STATE" = #{ACTIVATION_STATE},	
+			</if>
+			<if test="ALGEBRA != null and ALGEBRA != ''">
+				"ALGEBRA" = #{ALGEBRA},	
+			</if>
+			<if test="REMARKS != null and REMARKS != ''">
+				"REMARKS" = #{REMARKS},	
+			</if>
+			<if test="ETH != null and ETH != ''">
+				"ETH" = #{ETH},	
+			</if>
+			<if test="BTC != null and BTC != ''">
+				"BTC" = #{BTC},	
+			</if>	
+			<if test="IDENTITY != null and IDENTITY != ''">
+				"IDENTITY" = #{IDENTITY},	
+			</if>
+			<if test="JH_TIME != null and JH_TIME != ''">
+				"JH_TIME" = #{JH_TIME},	
+			</if>
+			<if test="YHMC != null and YHMC != ''">
+				"YHMC" = #{YHMC},	
+			</if>
+			<if test="PORTRAIT != null and PORTRAIT != ''">
+				"PORTRAIT" = #{PORTRAIT},	
+			</if>
+			 "MEMBERS_ID" = "MEMBERS_ID"
+			where  1=1
+			<if test="SERIAL != null and SERIAL != ''">
+				and "SERIAL" = #{SERIAL}
+			</if> 
+			<if test="MEMBERS_ID != null and MEMBERS_ID != ''">
+				and "MEMBERS_ID" = #{MEMBERS_ID}
+			</if> 
+	</update>
+	
+	<!-- 通过ID获取数据 -->
+	<select id="findById" parameterType="pd" resultType="pd">
+		select 
+		<include refid="Field"></include>
+		from 
+		<include refid="tableName"></include>
+		where 1=1
+		<if test="SERIAL != null and SERIAL != ''">
+			and "SERIAL" = #{SERIAL}
+		</if> 
+		<if test="MEMBERS_ID != null and MEMBERS_ID != ''">
+			and "MEMBERS_ID" = #{MEMBERS_ID}
+		</if> 
+	</select>
+	
+	<!-- 列表 -->
+	<select id="datalistPage" parameterType="page" resultType="pd">
+		select
+		<include refid="Field"></include>
+		from 
+		<include refid="tableName"></include>
+		where 1=1
+		<if test="pd.keywords!= null and pd.keywords != ''"><!-- 关键词检索 -->
+			and
+				(
+				<!--	根据需求自己加检索条件-->				
+					PHONE LIKE CONCAT(CONCAT('%', #{pd.keywords}),'%') 
+					 or 
+					SERIAL LIKE CONCAT(CONCAT('%', #{pd.keywords}),'%') 
+				
+				)
+		</if>
+		<if test="pd.name!= null and pd.name != ''"><!-- 关键词检索 -->
+			and IDENTITY = #{pd.name}
+		</if>
+		order by REGISTER_TIME desc
+	</select>
+	
+	<!-- 列表 -->
+	<select id="datalistPage2" parameterType="page" resultType="pd">
+		select
+		<include refid="Field"></include>
+		from 
+		<include refid="tableName"></include>
+		where IDENTITY = 2
+		<if test="pd.keywords!= null and pd.keywords != ''"><!-- 关键词检索 -->
+			and
+				(
+				<!--	根据需求自己加检索条件-->				
+					PHONE LIKE CONCAT(CONCAT('%', #{pd.keywords}),'%') 
+					 or 
+					SERIAL LIKE CONCAT(CONCAT('%', #{pd.keywords}),'%') 
+				
+				)
+		</if>
+		order by REGISTER_TIME desc
+	</select>
+	
+	<!-- 列表(全部) -->
+	<select id="listAll" parameterType="pd" resultType="pd">
+		select
+		<include refid="Field"></include>
+		from 
+		<include refid="tableName"></include>
+	</select>
+	
+	
+	<!-- 所有下级) -->
+	<select id="syxj" parameterType="String" resultType="pd">
+		select
+		<include refid="Field"></include>
+		from 
+		<include refid="tableName"></include>
+		where
+		SUPERIOR_F LIKE CONCAT(CONCAT('%', #{SERIAL}),'%') 
+	</select>
+	
+	<!-- 批量删除 -->
+	<delete id="deleteAll" parameterType="String">
+		delete from
+		<include refid="tableName"></include>
+		where 
+			"MEMBERS_ID" in
+		<foreach item="item" index="index" collection="array" open="(" separator="," close=")">
+                 #{item}
+		</foreach>
+	</delete>
+	
+		<!-- 通过手机号获取数据 -->
+	<select id="getPhone" parameterType="String" resultMap="MemUserResultMap">
+		select 
+		<include refid="Field"></include>
+		from 
+		<include refid="tableName"></include>
+		where 
+			"PHONE" = #{PHONE} or "SERIAL" = #{PHONE}
+	</select>
+	
+		<!-- 通过手机号获取下级数据 -->
+	<select id="getSUPERIOR" parameterType="String" resultMap="MemUserResultMap">
+		select 
+		<include refid="Field"></include>
+		from 
+		<include refid="tableName"></include>
+		where 
+			"SUPERIOR" = #{SUPERIOR} 
+	</select>
+	
+		<!-- 获取最新账号-->
+	<select id="getSERIAL" parameterType="String" resultType="java.lang.String">
+		select NVL(MAX(SERIAL)+1 , 8000 ) as SERIAL from  SYS_MEMBERS
+		
+	</select>
+	
+		<!-- 获取账号总-->
+	<select id="getTotal" parameterType="String" resultType="java.lang.Integer">
+		select NVL(count(SERIAL), 0 ) AS  as total from  SYS_MEMBERS
+		
+	</select>
+	
+		<!-- 实名认证总数-->
+	<select id="confirm_num" parameterType="String" resultType="java.lang.Integer">
+		select NVL(count(SERIAL), 0 ) AS total from  SYS_MEMBERS
+		where
+		SUPERIOR_F LIKE CONCAT(CONCAT('%', #{SERIAL}),'%') and IDENTITY=1
+	</select>
+	
+	
+</mapper>

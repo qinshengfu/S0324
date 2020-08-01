@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	   xmlns:mvc="http://www.springframework.org/schema/mvc"
+	   xmlns:context="http://www.springframework.org/schema/context"
+	   xmlns:cache="http://www.springframework.org/schema/cache" xmlns:aop="http://www.springframework.org/schema/aop"
+	   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/cache http://www.springframework.org/schema/cache/spring-cache.xsd http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd">
+	
+	<mvc:annotation-driven/>	
+	<mvc:default-servlet-handler/>
+	
+	<context:component-scan base-package="com.fh.controller" />
+	<aop:aspectj-autoproxy/>
+
+	<!-- 对静态资源文件的访问  restful-->
+	<!-- spring 4.3.7 可能会误报红叉，但不影响正常运行 -->       
+	<mvc:resources mapping="/admin/**" location="/,/admin/" />
+	<mvc:resources mapping="/static/**" location="/,/static/" />
+	<mvc:resources mapping="/plugins/**" location="/,/plugins/" />
+	<mvc:resources mapping="/uploadFiles/**" location="/,/uploadFiles/" /> 
+
+	<!-- 访问拦截  -->  
+  	<mvc:interceptors>
+		<mvc:interceptor>
+			<mvc:mapping path="/**/**"/>
+			<bean class="com.fh.interceptor.LoginHandlerInterceptor"/>
+		</mvc:interceptor>
+	 <!--该拦截器通过名为”lang”的参数来拦截HTTP请求，使其重新设置页面的区域化信息-->
+	 <bean id="localeChangeInterceptor" class="org.springframework.web.servlet.i18n.LocaleChangeInterceptor">
+	    <property name="paramName" value="lang" />
+	 </bean> 
+	</mvc:interceptors>
+	
+		<!-- 存储区域设置信息
+    SessionLocaleResolver类通过一个预定义会话名将区域化信息存储在会话中
+	    从session判断用户语言defaultLocale :默认语言-->
+	<bean id="localeResolver" class="org.springframework.web.servlet.i18n.SessionLocaleResolver">
+	    <property name="defaultLocale" value="zh_CN" />
+	</bean>
+	<!-- 国际化资源文件
+	messageSource配置的是国际化资源文件的路径，
+	classpath:messages指的是classpath路径下的
+	messages_zh_CN.properties文件和messages_en_US.properties文件
+	设置“useCodeAsDefaultMessage”，默认为false，这样当Spring在ResourceBundle中找不到messageKey的话，就抛出NoSuchMessageException，
+	把它设置为True，则找不到不会抛出异常，而是使用messageKey作为返回值。 -->
+	<bean id="messageSource" class="org.springframework.context.support.ReloadableResourceBundleMessageSource">
+	    <property name="defaultEncoding" value="UTF-8" />
+	    <property name="useCodeAsDefaultMessage" value="true" />
+	    <property name="basenames" >
+	        <list>
+	            <value>classpath:messages</value>
+	        </list>
+	    </property>
+	</bean>
+
+	
+	<!-- 配置SpringMVC的视图解析器 -->
+	<bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<property name="prefix" value="/WEB-INF/jsp/"/>
+		<property name="suffix" value=".jsp"/>
+	</bean>
+
+	<bean id="exceptionResolver" class="com.fh.resolver.MyExceptionResolver"/>
+	
+	<!-- 上传拦截，如最大上传值及最小上传值 -->
+	  <bean id="multipartResolver"   class="org.springframework.web.multipart.commons.CommonsMultipartResolver" >   
+		  <property name="maxUploadSize" value="104857600"/>
+	        <property name="maxInMemorySize" value="4096"/>
+	         <property name="defaultEncoding" value="utf-8"/>
+    </bean>
+
+
+
+</beans>

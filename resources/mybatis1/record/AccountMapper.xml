@@ -1,0 +1,513 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="AccountMapper">
+
+    <!--表名 -->
+    <sql id="tableName">
+		"FT_ACCOUNT"
+	</sql>
+
+    <!-- 字段 -->
+    <sql id="Field">
+		"GMT_CREATE",	
+		"GMT_MODIFIED",	
+		"USER_NAME",	
+		"LOGIN_PASSWORD",	
+		"SECURITY_PASSWORD",	
+		"USDT_WALLET",
+		"ENTERTAINMENT_SCORE",	
+		"SHARE_FUND",	
+		"RECOMMENDED_NUMBER",
+		"RECOMMENDER",	
+		"RE_PATH",	
+		"ALGEBRA",	
+		"USER_STATE",	
+		"TEAM_NUMBER",
+		"NAME",	
+		"COMMISSION",	
+		"PHONE",	
+		"USDT_IN_ADDRESS",	
+		"WALLET_QR_CODE",	
+		"IS_REST",
+		"USDT_ADDRESS",	
+		"USER_RANK",
+		"USDT_WALLET_ACTUAL",
+		"SECURITY_QUESTION",
+		"ANSWER",
+		"INVITATION_CODE",
+		"DAY_WITHDRAWALS_COUNT",
+		"ACCOUNT_ID"
+	</sql>
+
+    <!-- 字段值 -->
+    <sql id="FieldValue">
+			#{GMT_CREATE},	
+			#{GMT_MODIFIED},	
+			#{USER_NAME},	
+			#{LOGIN_PASSWORD},	
+			#{SECURITY_PASSWORD},	
+			#{USDT_WALLET},
+			#{ENTERTAINMENT_SCORE},	
+			#{SHARE_FUND},	
+			#{RECOMMENDED_NUMBER},	
+			#{RECOMMENDER},	
+			#{RE_PATH},	
+			#{ALGEBRA},	
+			#{USER_STATE},
+			#{TEAM_NUMBER},
+			#{NAME},	
+			#{COMMISSION},	
+			#{PHONE},	
+			#{USDT_IN_ADDRESS},	
+			#{WALLET_QR_CODE},	
+			#{IS_REST},
+			#{USDT_ADDRESS},	
+			#{USER_RANK},
+			#{USDT_WALLET_ACTUAL},
+			#{SECURITY_QUESTION},
+			#{ANSWER},
+			#{INVITATION_CODE},
+			#{DAY_WITHDRAWALS_COUNT},
+			#{ACCOUNT_ID}
+	</sql>
+
+    <!-- 新增-->
+    <insert id="save" parameterType="pd">
+        insert into
+        <include refid="tableName"/>
+        (
+        <include refid="Field"/>
+        ) values (
+        <include refid="FieldValue"/>
+        )
+    </insert>
+
+    <!-- 清空数据 -->
+    <delete id="deleteAllData" parameterType="pd">
+        delete from
+        <include refid="tableName"/>
+        where
+        "ACCOUNT_ID" != '10000'
+    </delete>
+
+    <!-- 重置顶点账号信息 -->
+    <update id="resetAccount" parameterType="pd">
+        update
+        <include refid="tableName"/>
+        set
+        "RE_PATH" = '',
+        "USDT_WALLET" = 10000,
+        "ENTERTAINMENT_SCORE" = 10000,
+        "SHARE_FUND" = 10000,
+        "RECOMMENDED_NUMBER" = 0,
+        "ALGEBRA" = 0,
+        "USER_STATE" = 0,
+        "TEAM_NUMBER" = 0,
+        "DAY_WITHDRAWALS_COUNT" = 0,
+        "ACCOUNT_ID" = "ACCOUNT_ID"
+        where
+        "ACCOUNT_ID" = '10000'
+    </update>
+
+    <!-- 修改测试 -->
+    <update id="updateTest" parameterType="pd">
+        update
+        <include refid="tableName"/>
+        set
+        <foreach item="item" collection="_parameter.keys"
+                 separator="," close="">
+            <if test="item != null and item != '' ">
+                ${item} = #{[${item}]}
+            </if>
+        </foreach>
+        where
+        "ACCOUNT_ID" = #{ACCOUNT_ID}
+    </update>
+
+    <!-- 修改 -->
+    <update id="edit" parameterType="pd">
+        update
+        <include refid="tableName"/>
+        set
+        <foreach item="item" collection="_parameter.keys"
+                 separator="," close="">
+            <if test="item != null and item != '' ">
+                ${item} = #{[${item}]}
+            </if>
+        </foreach>
+        where
+        "ACCOUNT_ID" = #{ACCOUNT_ID}
+        and
+        "GMT_MODIFIED" &lt; #{GMT_MODIFIED}
+    </update>
+
+    <!-- 修改去掉乐观锁 -->
+    <update id="editFor" parameterType="pd">
+        update
+        <include refid="tableName"/>
+        set
+        <foreach item="item" collection="_parameter.keys"
+                 separator="," close="">
+            <if test="item != null and item != '' ">
+                ${item} = #{[${item}]}
+            </if>
+        </foreach>
+        where
+        "ACCOUNT_ID" = #{ACCOUNT_ID}
+    </update>
+
+    <!-- 增加分享基金 -->
+    <update id="addSharedFunds" parameterType="pd">
+        update
+        <include refid="tableName"/>
+        set
+        "SHARE_FUND" = "SHARE_FUND" + ${money},
+        "GMT_MODIFIED" = #{GMT_MODIFIED}
+        where
+        "ACCOUNT_ID" = #{ACCOUNT_ID}
+    </update>
+
+    <!-- 减少分享基金 -->
+    <update id="reduceSharedFunds" parameterType="pd">
+        update
+        <include refid="tableName"/>
+        set
+        "SHARE_FUND" = "SHARE_FUND" - ${money},
+        "GMT_MODIFIED" = #{GMT_MODIFIED}
+        where
+        "ACCOUNT_ID" = #{ACCOUNT_ID}
+    </update>
+
+    <!-- 增加娱乐积分 -->
+    <update id="addScoreNumber" parameterType="pd">
+        update
+        <include refid="tableName"/>
+        set
+        "ENTERTAINMENT_SCORE" = "ENTERTAINMENT_SCORE" + ${money},
+        "GMT_MODIFIED" = #{GMT_MODIFIED}
+        where
+        "ACCOUNT_ID" = #{ACCOUNT_ID}
+    </update>
+
+    <!-- 减少娱乐积分 -->
+    <update id="reduceScoreNumber" parameterType="pd">
+        update
+        <include refid="tableName"/>
+        set
+        "ENTERTAINMENT_SCORE" = "ENTERTAINMENT_SCORE" - ${money},
+        "GMT_MODIFIED" = #{GMT_MODIFIED}
+        where
+        "ACCOUNT_ID" = #{ACCOUNT_ID}
+    </update>
+
+    <!-- 增加USDT -->
+    <update id="addUsdt" parameterType="pd">
+        update
+        <include refid="tableName"/>
+        set
+        "USDT_WALLET" = "USDT_WALLET" + ${money},
+        "GMT_MODIFIED" = #{GMT_MODIFIED}
+        where
+        "ACCOUNT_ID" = #{ACCOUNT_ID}
+    </update>
+
+    <!-- 减少USDT -->
+    <update id="reduceUsdt" parameterType="pd">
+        update
+        <include refid="tableName"/>
+        set
+        "USDT_WALLET" = "USDT_WALLET" - ${money},
+        "GMT_MODIFIED" = #{GMT_MODIFIED}
+        where
+        "ACCOUNT_ID" = #{ACCOUNT_ID}
+    </update>
+
+    <!-- 增加每天提现累积 -->
+    <update id="addDayWithdrawalsCount" parameterType="MemUser">
+        update
+        <include refid="tableName"/>
+        set
+        "DAY_WITHDRAWALS_COUNT" = "DAY_WITHDRAWALS_COUNT" + 1
+        where
+        "ACCOUNT_ID" = #{ACCOUNT_ID}
+    </update>
+
+    <!-- 重置每天提现累积为0 -->
+    <update id="resetDayWithdrawalsCount" parameterType="String">
+        update
+        <include refid="tableName"/>
+        set
+        "DAY_WITHDRAWALS_COUNT" = 0
+    </update>
+
+    <!-- 增加推荐人数 -->
+    <update id="addRecommendQuantity" parameterType="MemUser">
+        update
+        <include refid="tableName"/>
+        set
+        "RECOMMENDED_NUMBER" = "RECOMMENDED_NUMBER" + 1
+        where
+        "ACCOUNT_ID" = #{ACCOUNT_ID}
+    </update>
+
+    <!-- 增加团队人数 -->
+    <update id="addTeamAmount" parameterType="MemUser">
+        update
+        <include refid="tableName"/>
+        set
+        "TEAM_NUMBER" = "TEAM_NUMBER" + 1
+        where
+        "ACCOUNT_ID" in (${RE_PATH})
+    </update>
+
+    <!-- 通过ID获取数据 -->
+    <select id="findById" parameterType="pd" resultType="pd">
+        select
+        <include refid="Field"/>
+        from
+        <include refid="tableName"/>
+        where
+        "ACCOUNT_ID" = #{ACCOUNT_ID}
+    </select>
+
+    <!-- 获取今日充值累积 -->
+    <select id="getDayRechargeTotalSum" parameterType="pd" resultType="pd">
+        SELECT
+        NVL( SUM( "MONEY" ), 0 ) AS DAY_RECHARGE_SUM
+        FROM
+        FT_USDT_REC
+        WHERE
+        "GMT_CREATE" >= TO_CHAR( SYSDATE, 'YYYY-MM-DD' )
+        AND "AMOUNT_TYPE" = '充值'
+        AND "STATUS" = '已完成'
+    </select>
+
+    <!-- 获取所有充值累积 -->
+    <select id="getRechargeTotalSumAll" parameterType="pd" resultType="pd">
+        SELECT
+            NVL( SUM( "MONEY" ), 0 ) AS ALL_RECHARGE_SUM
+        FROM
+            FT_USDT_REC
+        WHERE
+            "AMOUNT_TYPE" = '充值'
+            AND "STATUS" = '已完成'
+    </select>
+
+    <!-- 获取今日提现累积 -->
+    <select id="getDayWithdrawalTotalSum" parameterType="pd" resultType="pd">
+        SELECT
+            NVL( SUM( "MONEY" ), 0 ) AS DAY_WITHDRAWAL_SUM
+        FROM
+            FT_USDT_REC
+        WHERE
+            "GMT_CREATE" >= TO_CHAR( SYSDATE, 'YYYY-MM-DD' )
+            AND "AMOUNT_TYPE" = '提币'
+            AND "STATUS" = '已完成'
+    </select>
+
+    <!-- 获取所有提现累积 -->
+    <select id="getWithdrawalTotalSumAll" parameterType="pd" resultType="pd">
+        SELECT
+            NVL( SUM( "MONEY" ), 0 ) AS ALL_WITHDRAWAL_SUM
+        FROM
+            FT_USDT_REC
+        WHERE
+            "AMOUNT_TYPE" = '提币'
+            AND "STATUS" = '已完成'
+    </select>
+
+    <!-- 通过用户id获取充值或者转账累计总额 -->
+    <select id="getSumAmountByUserId" parameterType="pd" resultType="pd">
+        SELECT
+            NVL( SUM( "MONEY" ), 0 ) AS TOTAL_AMOUNT
+        FROM
+            ( SELECT "MONEY", "USER_ID" FROM "FT_USDT_REC" WHERE "AMOUNT_TYPE" = '转账' AND "TAG" = '+' OR "AMOUNT_TYPE" = '充值' AND "STATUS" = '已完成' )
+        WHERE
+            "USER_ID" = #{ACCOUNT_ID}
+    </select>
+
+    <!-- 查询团队业绩余额 -->
+    <select id="findByIdTeamPerformance" parameterType="pd" resultType="pd">
+        SELECT
+            ( t1.TEAM_REVENUE - t2.TEAM_EXPENDITURE ) AS TEAM_PERFORMANCE
+        FROM
+            (
+        SELECT
+            NVL( SUM( MONEY ), 0 ) AS TEAM_REVENUE
+        FROM
+            "FT_USDT_REC"
+        WHERE
+            "STATUS" = '已完成'
+            AND "AMOUNT_TYPE" = '充值'
+            AND USER_ID IN ( SELECT ACCOUNT_ID FROM "FT_ACCOUNT" WHERE "RE_PATH" LIKE CONCAT( CONCAT( '%', #{ACCOUNT_ID} ), '%' ) )
+            ) t1,
+            (
+        SELECT
+            NVL( SUM( MONEY ), 0 ) AS TEAM_EXPENDITURE
+        FROM
+            "FT_USDT_REC"
+        WHERE
+            "STATUS" = '已完成'
+            AND "AMOUNT_TYPE" = '提币'
+            AND USER_ID IN ( SELECT ACCOUNT_ID FROM "FT_ACCOUNT" WHERE "RE_PATH" LIKE CONCAT( CONCAT( '%', #{ACCOUNT_ID} ), '%' ) )
+            ) t2
+    </select>
+
+    <!-- 通过非休息号查询有多少团队活跃人数 -->
+    <select id="findByActiveTeams" parameterType="pd" resultType="pd">
+        SELECT
+        COUNT( "ACCOUNT_ID" ) AS "TEAM_SUM"
+        FROM
+        (
+        SELECT
+        <include refid="Field"/>
+        FROM
+        <include refid="tableName"/>
+        WHERE
+        "RE_PATH" LIKE CONCAT(CONCAT('%', #{ACCOUNT_ID}),'%')
+        AND IS_REST = 0
+        )
+    </select>
+
+    <!-- 通过非休息号查询有多少直推活跃人数 -->
+    <select id="findByActiveRecommended" parameterType="pd" resultType="pd">
+        SELECT
+        COUNT( "ACCOUNT_ID" ) AS "RECOMMEND_TOTAL"
+        FROM
+        (
+        SELECT
+        <include refid="Field"/>
+        FROM
+        <include refid="tableName"/>
+        WHERE
+        "RECOMMENDER" = #{ACCOUNT_ID}
+        AND IS_REST = 0
+        )
+    </select>
+
+    <!-- 通过id获取数据返回实体 -->
+    <select id="findByIdPojo" parameterType="pd" resultType="MemUser">
+        select
+        <include refid="Field"/>
+        from
+        <include refid="tableName"/>
+        where
+        "ACCOUNT_ID" = #{ACCOUNT_ID}
+    </select>
+
+    <!-- 按用户名查找返回实体 -->
+    <select id="findByNameReturnEntity" parameterType="pd" resultType="MemUser">
+        select
+        <include refid="Field"/>
+        from
+        <include refid="tableName"/>
+        where
+        "USER_NAME" = #{USER_NAME}
+    </select>
+
+    <!-- 按邀请码查找返回实体 -->
+    <select id="findByInvitationCode" parameterType="pd" resultType="MemUser">
+        select
+        <include refid="Field"/>
+        from
+        <include refid="tableName"/>
+        where
+        "INVITATION_CODE" = #{INVITATION_CODE}
+    </select>
+
+    <!-- 按用户名和密码查找返回实体 -->
+    <select id="findByNameAndPass" parameterType="pd" resultType="MemUser">
+        select
+        <include refid="Field"/>
+        from
+        <include refid="tableName"/>
+        where
+        "USER_NAME" = #{USER_NAME}
+        and
+        "LOGIN_PASSWORD" = #{LOGIN_PASSWORD}
+    </select>
+
+    <!-- 列表：根据用户ID查询我的团队 -->
+    <select id="findByByIdOnPath" resultType="pd">
+        select
+        <include refid="Field"/>
+        from
+        <include refid="tableName"/>
+        where
+        "RECOMMENDER" = #{ACCOUNT_ID}
+        order by "GMT_CREATE" DESC
+    </select>
+
+    <!-- 列表 -->
+    <select id="datalistPage" parameterType="page" resultType="pd">
+        select
+        <include refid="Field"/>
+        from
+        <include refid="tableName"/>
+        where 1=1
+        <if test="pd.keywords!= null and pd.keywords != ''"><!-- 关键词检索 -->
+            and
+            (
+            "USER_NAME" LIKE CONCAT(CONCAT('%', #{pd.keywords}),'%')
+            or
+            "RECOMMENDER" LIKE CONCAT(CONCAT('%', #{pd.keywords}),'%')
+            )
+        </if>
+        /*时间段搜索*/
+        <if test="pd.lastStart != null and pd.lastStart != '' ">
+            and
+            "GMT_CREATE" &gt;= #{pd.lastStart}
+        </if>
+        <if test="pd.lastEnd!= null and pd.lastEnd != '' ">
+            and
+            "GMT_CREATE" &lt;= ( SELECT TO_CHAR(( SELECT to_date( #{pd.lastEnd}, 'yyyy-mm-dd' ) + 1 FROM dual ),
+            'yyyy-mm-dd' ) FROM dual )
+        </if>
+        order by "GMT_CREATE" desc
+    </select>
+
+    <!-- 列表(全部) -->
+    <select id="listAll" resultType="pd">
+        select
+        <include refid="Field"/>
+        from
+        <include refid="tableName"/>
+        ORDER BY "ACCOUNT_ID"
+    </select>
+
+    <!-- 列表(追龙未完成的) -->
+    <select id="notFinishedList" resultType="pd">
+        SELECT
+            *
+        FROM
+            FT_ACCOUNT a
+            JOIN FT_RECEIPT_REC b ON b.STATUS != '已完成'
+            AND a.ACCOUNT_ID = b.USER_ID
+        ORDER BY
+	        "ACCOUNT_ID"
+    </select>
+
+    <!-- 列表(所有上级) -->
+    <select id="listAllSuperiorByPath" parameterType="pd" resultType="pd">
+        select
+        <include refid="Field"/>
+        from
+        <include refid="tableName"/>
+        where
+        "ACCOUNT_ID" in (${RE_PATH})
+        order by "GMT_CREATE" DESC
+    </select>
+
+    <!-- 列表(所有下级) -->
+    <select id="listAllSubByUserId" parameterType="pd" resultType="pd">
+        select
+        <include refid="Field"/>
+        from
+        <include refid="tableName"/>
+        where
+        "RE_PATH" LIKE CONCAT(CONCAT('%', #{ACCOUNT_ID}),'%')
+        order by "GMT_CREATE"
+    </select>
+
+
+</mapper>

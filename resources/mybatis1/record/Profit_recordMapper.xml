@@ -1,0 +1,209 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="Profit_recordMapper">
+
+    <!--表名 -->
+    <sql id="tableName">
+		"FT_PROFIT_RECORD"
+	</sql>
+
+    <!-- 字段 -->
+    <sql id="Field">
+		"GMT_CREATE",	
+		"GMT_MODIFIED",	
+		"USER_NAME",	
+		"USER_ID",
+		"AMOUNT_TYPE",	
+		"ASSETS",	
+		"EARNINGS",	
+		"STATUS",	
+		"ACTUAL_ARRIVAL",	
+		"ORDER_PID",	
+		"PROFIT_RECORD_ID"
+	</sql>
+
+    <!-- 字段值 -->
+    <sql id="FieldValue">
+			#{GMT_CREATE},	
+			#{GMT_MODIFIED},	
+			#{USER_NAME},	
+			#{USER_ID},	
+			#{AMOUNT_TYPE},	
+			#{ASSETS},	
+			#{EARNINGS},	
+			#{STATUS},	
+			#{ACTUAL_ARRIVAL},	
+			#{ORDER_PID},	
+			#{PROFIT_RECORD_ID}
+	</sql>
+
+    <!-- 新增-->
+    <insert id="save" parameterType="pd">
+        insert into
+        <include refid="tableName"></include>
+        (
+        <include refid="Field"></include>
+        ) values (
+        <include refid="FieldValue"></include>
+        )
+    </insert>
+
+    <!-- 删除-->
+    <delete id="delete" parameterType="pd">
+        delete from
+        <include refid="tableName"></include>
+        where
+        "PROFIT_RECORD_ID" = #{PROFIT_RECORD_ID}
+    </delete>
+
+    <!-- 修改 -->
+    <update id="edit" parameterType="pd">
+        update
+        <include refid="tableName"/>
+        set
+        <foreach item="item" collection="_parameter.keys"
+                 separator="," close="">
+            <if test="item != null and item != '' ">
+                ${item} = #{[${item}]}
+            </if>
+        </foreach>
+        where
+        "PROFIT_RECORD_ID" = #{PROFIT_RECORD_ID}
+    </update>
+
+    <!-- 通过ID获取数据 -->
+    <select id="findById" parameterType="pd" resultType="pd">
+        select
+        <include refid="Field"></include>
+        from
+        <include refid="tableName"></include>
+        where
+        "PROFIT_RECORD_ID" = #{PROFIT_RECORD_ID}
+    </select>
+
+    <!-- 通过用户ID和状态获取记录 -->
+    <select id="findByOrderIdAndStatus" parameterType="pd" resultType="pd">
+        select
+        <include refid="Field"/>
+        from
+        <include refid="tableName"/>
+        where
+        "USER_ID" = #{USER_ID}
+        and
+        "STATUS" = #{STATUS}
+    </select>
+
+    <!-- 通过跑单ID和状态获取已发放的总额 -->
+    <select id="getBonusSumByOrderId" parameterType="pd" resultType="pd">
+        select
+        NVL(SUM("ACTUAL_ARRIVAL"), 0) AS BONUS_SUM
+        from
+        (
+        select
+        <include refid="Field"/>
+        from
+        <include refid="tableName"/>
+        where
+        "ORDER_PID" = #{ORDER_PID}
+        and
+        "STATUS" = #{STATUS}
+        )
+    </select>
+
+    <!-- 通过跑单ID获取收益总额 -->
+    <select id="getMoneySumByOrderId" parameterType="pd" resultType="pd">
+        select
+        NVL(SUM("ASSETS"), 0) AS  MONEY_SUM
+        from
+        (
+        select
+        <include refid="Field"/>
+        from
+        <include refid="tableName"/>
+        where
+        "ORDER_PID" = #{ORDER_PID}
+        and
+        "STATUS" = #{STATUS}
+        )
+    </select>
+
+    <!-- 通过用户ID获取今日收益总额 -->
+    <select id="getDayEarningsSumByUserId" parameterType="pd" resultType="pd">
+        select
+        NVL(SUM("EARNINGS"), 0) AS EARNINGS_SUM
+        from
+        (
+        select
+        <include refid="Field"/>
+        from
+        <include refid="tableName"/>
+        where
+        "USER_ID" = #{USER_ID}
+        and "STATUS" = #{STATUS}
+        and "GMT_MODIFIED" &gt;= #{nowTime}
+        )
+    </select>
+
+    <!-- 列表 -->
+    <select id="datalistPage" parameterType="page" resultType="pd">
+        select
+        <include refid="Field"></include>
+        from
+        <include refid="tableName"></include>
+        where 1=1
+        <if test="pd.keywords!= null and pd.keywords != ''"><!-- 关键词检索 -->
+            and
+            (
+            "AMOUNT_TYPE" LIKE CONCAT(CONCAT('%', #{pd.keywords}),'%')
+            or
+            "USER_NAME" LIKE CONCAT(CONCAT('%', #{pd.keywords}),'%')
+            or
+            "STATUS" LIKE CONCAT(CONCAT('%', #{pd.keywords}),'%')
+            )
+        </if>
+        /*时间段搜索*/
+        <if test="pd.lastStart != null and pd.lastStart != '' ">
+            and
+            "GMT_CREATE" &gt;= #{pd.lastStart}
+        </if>
+        <if test="pd.lastEnd!= null and pd.lastEnd != '' ">
+            and
+            "GMT_CREATE" &lt;= ( SELECT TO_CHAR(( SELECT to_date( #{pd.lastEnd}, 'yyyy-mm-dd' ) + 1 FROM dual ),
+            'yyyy-mm-dd' ) FROM dual )
+        </if>
+        order by "GMT_MODIFIED" desc
+    </select>
+
+    <!-- 列表(全部) -->
+    <select id="listAll" parameterType="pd" resultType="pd">
+        select
+        <include refid="Field"></include>
+        from
+        <include refid="tableName"></include>
+    </select>
+
+    <!-- 列表(根据用户ID和状态) -->
+    <select id="listByUserIdAndStatus" parameterType="pd" resultType="pd">
+        select
+        <include refid="Field"/>
+        from
+        <include refid="tableName"/>
+        where
+        "USER_ID" = #{USER_ID}
+        and "STATUS" = #{STATUS}
+        order by "GMT_MODIFIED" desc
+    </select>
+
+    <!-- 批量删除 -->
+    <delete id="deleteAll" parameterType="String">
+        delete from
+        <include refid="tableName"></include>
+        where
+        "PROFIT_RECORD_ID" in
+        <foreach item="item" index="index" collection="array" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </delete>
+
+    <!-- fh313596790qq(青苔) -->
+</mapper>

@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="Fund_recMapper">
+
+    <!--表名 -->
+    <sql id="tableName">
+		"FT_FUND_REC"
+	</sql>
+
+    <!-- 字段 -->
+    <sql id="Field">
+		"GMT_CREATE",	
+		"GMT_MODIFIED",	
+		"USER_NAME",	
+		"USER_ID",	
+		"AMOUNT_TYPE",	
+		"TAG",	
+		"MONEY",	
+		"HE_NAME",	
+		"HE_ID",	
+		"STATUS",	
+		"FUND_REC_ID"
+	</sql>
+
+    <!-- 字段值 -->
+    <sql id="FieldValue">
+			#{GMT_CREATE},	
+			#{GMT_MODIFIED},	
+			#{USER_NAME},	
+			#{USER_ID},	
+			#{AMOUNT_TYPE},	
+			#{TAG},	
+			#{MONEY},	
+			#{HE_NAME},	
+			#{HE_ID},	
+			#{STATUS},	
+			#{FUND_REC_ID}
+	</sql>
+
+    <!-- 新增-->
+    <insert id="save" parameterType="pd">
+        insert into
+        <include refid="tableName"></include>
+        (
+        <include refid="Field"></include>
+        ) values (
+        <include refid="FieldValue"></include>
+        )
+    </insert>
+
+    <!-- 删除-->
+    <delete id="delete" parameterType="pd">
+        delete from
+        <include refid="tableName"></include>
+        where
+        "FUND_REC_ID" = #{FUND_REC_ID}
+    </delete>
+
+    <!-- 修改 -->
+    <update id="edit" parameterType="pd">
+        update
+        <include refid="tableName"/>
+        set
+        <foreach item="item" collection="_parameter.keys"
+                 separator="," close="">
+            <if test="item != null and item != '' ">
+                ${item} = #{[${item}]}
+            </if>
+        </foreach>
+        where
+        "FUND_REC_ID" = #{FUND_REC_ID}
+    </update>
+
+    <!-- 通过ID获取数据 -->
+    <select id="findById" parameterType="pd" resultType="pd">
+        select
+        <include refid="Field"></include>
+        from
+        <include refid="tableName"></include>
+        where
+        "FUND_REC_ID" = #{FUND_REC_ID}
+    </select>
+
+    <!-- 列表 -->
+    <select id="datalistPage" parameterType="page" resultType="pd">
+        select
+        <include refid="Field"></include>
+        from
+        <include refid="tableName"></include>
+        where 1=1
+        <if test="pd.keywords!= null and pd.keywords != ''"><!-- 关键词检索 -->
+            and
+            (
+            "AMOUNT_TYPE" LIKE CONCAT(CONCAT('%', #{pd.keywords}),'%')
+            or
+            "USER_NAME" LIKE CONCAT(CONCAT('%', #{pd.keywords}),'%')
+            or
+            "HE_NAME" LIKE CONCAT(CONCAT('%', #{pd.keywords}),'%')
+            or
+            "STATUS" LIKE CONCAT(CONCAT('%', #{pd.keywords}),'%')
+            )
+        </if>
+        /*时间段搜索*/
+        <if test="pd.lastStart != null and pd.lastStart != '' ">
+            and
+            "GMT_CREATE" &gt;= #{pd.lastStart}
+        </if>
+        <if test="pd.lastEnd!= null and pd.lastEnd != '' ">
+            and
+            "GMT_CREATE" &lt;= ( SELECT TO_CHAR(( SELECT to_date( #{pd.lastEnd}, 'yyyy-mm-dd' ) + 1 FROM dual ),
+            'yyyy-mm-dd' ) FROM dual )
+        </if>
+        order by "GMT_CREATE" desc
+    </select>
+
+    <!-- 列表(全部) -->
+    <select id="listAll" parameterType="pd" resultType="pd">
+        select
+        <include refid="Field"></include>
+        from
+        <include refid="tableName"></include>
+    </select>
+
+    <!-- 列表(根据用户id) -->
+    <select id="listByUserId" parameterType="pd" resultType="pd">
+        select
+        <include refid="Field"/>
+        from
+        <include refid="tableName"/>
+        where
+        "USER_ID" = #{USER_ID}
+        order by "FUND_REC_ID" desc
+    </select>
+
+    <!-- 列表(根据用户id和类型) -->
+    <select id="listByUserIdAndType" parameterType="pd" resultType="pd">
+        select
+        <include refid="Field"/>
+        from
+        <include refid="tableName"/>
+        where
+        "USER_ID" = #{USER_ID}
+        and "AMOUNT_TYPE" = #{AMOUNT_TYPE}
+        order by "FUND_REC_ID"
+    </select>
+
+    <!-- 列表(根据用户id和状态) -->
+    <select id="listByUserIdAndStatus" parameterType="pd" resultType="pd">
+        select
+        <include refid="Field"/>
+        from
+        <include refid="tableName"/>
+        where
+        "USER_ID" = #{USER_ID}
+        and "STATUS" = #{STATUS}
+        and "HE_NAME" IS NULL
+        order by "FUND_REC_ID"
+    </select>
+
+    <!-- 列表(按推荐路径和状态和对方用户ID) -->
+    <select id="listByPathAndStatus" parameterType="pd" resultType="pd">
+        select
+        <include refid="Field"/>
+        from
+        <include refid="tableName"/>
+        where
+        "USER_ID" in (${RE_PATH})
+        and "STATUS" = #{STATUS}
+        and "HE_ID" = #{USER_ID}
+    </select>
+
+    <!-- 批量删除 -->
+    <delete id="deleteAll" parameterType="String">
+        delete from
+        <include refid="tableName"></include>
+        where
+        "FUND_REC_ID" in
+        <foreach item="item" index="index" collection="array" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </delete>
+
+    <!-- fh313596790qq(青苔) -->
+</mapper>

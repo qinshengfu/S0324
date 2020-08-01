@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="Sys_configMapper">
+	
+	<!--表名 -->
+	<sql id="tableName">
+		"FT_SYS_CONFIG"
+	</sql>
+	
+	<!-- 字段 -->
+	<sql id="Field">
+		"GMT_CREATE",	
+		"GMT_MODIFIED",	
+		"COMMISSION",	
+		"WHEEL_TIMES",	
+		"TEAM_ACTIVE_NUMBER",
+		"COMMISSION_RISE",	
+		"COMMISSION_CEILING",	
+		"CASH_TIME",	
+		"NO_OPERATION_TIME",	
+		"RELEASE_FROM_REST",	
+		"ENTERTAINMENT_SCORE",	
+		"SHARE_FUND",	
+		"CHARGE_FOR_WITHDRAWAL",	
+		"EACH_FULL_FUND",	
+		"WITHDRAWAL_CONDITIONS",	
+		"MIN_RECHARGE",	
+		"RECHARGE_MULTIPLE",	
+		"MAX_RECHARGE",	
+		"USDT_ADDRESS",	
+		"RUN_TIME_EACH",
+		"MIN_MINUTE",
+		"MAX_MINUTE",
+		"TRANSFER_MULTIPLE",
+		"ORDER_MULTIPLE",
+		"INVESTMENT_CEILING",
+		"MIN_CASH",
+		"MIN_INVESTMENT",
+		"DAY_MAX_WITHDRAWALS_COUNT",
+		"SYS_CONFIG_ID"
+	</sql>
+	
+	<!-- 字段值 -->
+	<sql id="FieldValue">
+			#{GMT_CREATE},	
+			#{GMT_MODIFIED},	
+			#{COMMISSION},	
+			#{WHEEL_TIMES},	
+			#{TEAM_ACTIVE_NUMBER},
+			#{COMMISSION_RISE},	
+			#{COMMISSION_CEILING},	
+			#{CASH_TIME},	
+			#{NO_OPERATION_TIME},	
+			#{RELEASE_FROM_REST},	
+			#{ENTERTAINMENT_SCORE},	
+			#{SHARE_FUND},	
+			#{CHARGE_FOR_WITHDRAWAL},	
+			#{EACH_FULL_FUND},	
+			#{WITHDRAWAL_CONDITIONS},	
+			#{MIN_RECHARGE},	
+			#{RECHARGE_MULTIPLE},	
+			#{MAX_RECHARGE},	
+			#{USDT_ADDRESS},	
+			#{RUN_TIME_EACH},
+			#{MIN_MINUTE},
+			#{MAX_MINUTE},
+			#{TRANSFER_MULTIPLE},
+			#{ORDER_MULTIPLE},
+			#{INVESTMENT_CEILING},
+			#{MIN_CASH},
+			#{MIN_INVESTMENT},
+			#{DAY_MAX_WITHDRAWALS_COUNT},
+			#{SYS_CONFIG_ID}
+	</sql>
+
+
+	<!-- 清空前台所有表-->
+	<delete id="deleteAllTable" parameterType="String">
+		delete from
+		${_parameter}
+	</delete>
+
+	<!-- 修改 -->
+	<update id="edit" parameterType="pd">
+		update
+		<include refid="tableName"/>
+		set
+		<foreach collection="_parameter.keys" item="item" separator="," close="">
+			${item} = #{[${item}]}
+		</foreach>
+		where
+		"SYS_CONFIG_ID" = '1'
+	</update>
+
+	<!-- 重置序列 -->
+	<select id="reset_seq" parameterType="pd" statementType="CALLABLE">
+		<!--调用存储过程有专门的标签statementType="CALLABLE" 用{}括起来-->
+		{
+		call RESET_SEQ(#{seqName},#{seqStart})
+		}
+	</select>
+	
+	<!-- 通过ID获取数据 -->
+	<select id="findById" parameterType="pd" resultType="pd">
+		select 
+		<include refid="Field"/>
+		from 
+		<include refid="tableName"/>
+		where 
+			"SYS_CONFIG_ID" = #{SYS_CONFIG_ID}
+	</select>
+
+</mapper>
